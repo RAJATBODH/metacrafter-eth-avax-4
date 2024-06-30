@@ -49,10 +49,10 @@ License
 This project is licensed under the MIT License - see the LICENSE.md file for details. 
 
  
-pragma solidity 0.8.26;
-    
-contract DegenGaming {
-    address public commandCenter;
+    pragma solidity 0.8.26;
+        
+    contract DegenGaming {
+        address public commandCenter;
 
     // Token details
     string public tokenName = "Degen";
@@ -123,4 +123,4 @@ contract DegenGaming {
     function getRedeemedItems(address user) external view returns (string[] memory) {
         return redeemedItems[user];
     }
-  }
+    }
