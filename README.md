@@ -49,11 +49,10 @@ License
 This project is licensed under the MIT License - see the LICENSE.md file for details. 
 
  
-     // SPDX-License-Identifier: MIT
-    pragma solidity 0.8.26;
+pragma solidity 0.8.26;
     
-    contract DegenGaming {
-        address public commandCenter;
+contract DegenGaming {
+    address public commandCenter;
 
     // Token details
     string public tokenName = "Degen";
@@ -124,4 +123,4 @@ This project is licensed under the MIT License - see the LICENSE.md file for det
     function getRedeemedItems(address user) external view returns (string[] memory) {
         return redeemedItems[user];
     }
-    }
+  }
