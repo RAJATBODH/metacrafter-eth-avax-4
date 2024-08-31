@@ -19,7 +19,7 @@ contract Degen_Gaming is ERC20, ERC20Burnable {
         uint256 price;
     }
 
-    // Initiate a constructor
+    // Initiate a constructors
     constructor() ERC20("Degen", "DGN"){
         headquarters = msg.sender;
         Reward[0] = NFT("Diamond Boots", 2);
