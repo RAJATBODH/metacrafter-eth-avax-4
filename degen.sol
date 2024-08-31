@@ -1,75 +1,67 @@
 // SPDX-License-Identifier: MIT
 pragma solidity 0.8.26;
 
-contract DegenGaming {
-    address public commandCenter;
+import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
+import "@openzeppelin/contracts/access/Ownable.sol";
+import "@openzeppelin/contracts/token/ERC20/extensions/ERC20Burnable.sol";
+import "hardhat/console.sol";
 
-    // Token details
-    string public tokenName = "Degen";
-    string public symbol = "DGN";
-    uint public totalSupply = 0;
+contract Degen_Gaming is ERC20, ERC20Burnable {
 
-    // Constructor to initialize the contract
-    constructor() {
-        commandCenter = msg.sender;
-        rewards[0] = NFT("Emerald Boots", 2);
-        rewards[1] = NFT("Emerald Sword", 3);
-        rewards[2] = NFT("Identity Change Card", 5);
-    }
+    address public headquarters;
 
-    // Modifier to allow only owner to mint the tokens
-    modifier onlyOwner() {
-        require(msg.sender == commandCenter, "Only the command center can mint new tokens");
-        _;
-    }
-
-    // Mapping to store balances and rewards
-    mapping(address => uint256) private balances;
-    mapping(uint256 => NFT) public rewards;
+    // Mapping the address with their respective balance and NFT with the reward
+    mapping(uint256 => NFT) public Reward;
     mapping(address => string[]) public redeemedItems;
 
-    // Struct to represent an NFT reward
     struct NFT {
         string name;
         uint256 price;
     }
 
-    // Function to mint new tokens
-    function mint(uint256 amount, address receiver) external onlyOwner {
-        require(amount > 0, "Minting amount should be greater than 0");
-        totalSupply += amount;
-        balances[receiver] += amount;
+    // Initiate a constructor
+    constructor() ERC20("Degen", "DGN"){
+        headquarters = msg.sender;
+        Reward[0] = NFT("Diamond Boots", 2);
+        Reward[1] = NFT("Diamond Sword", 3);
+        Reward[2] = NFT("Name Change Card", 5);
     }
 
-    // Function to transfer tokens
-    function transfer(uint256 amount, address receiver) external {
-        require(amount <= balances[msg.sender], "Insufficient balance to transfer");
-        balances[receiver] += amount;
-        balances[msg.sender] -= amount;
+    // Modifier to allow only owner to mint the tokens
+    modifier ownerOnly() {
+        require(msg.sender == headquarters, "Headquarters has rights to mint new token");
+        _;
     }
 
-    // Function to burn tokens
-    function burn(uint256 amount) external {
-        require(amount <= balances[msg.sender], "Insufficient balance to burn");
-        balances[msg.sender] -= amount;
+    // Functions to mint, transfer, burn, check balance, and redeem rewards
+    function mint(uint amount, address receiver_address) ownerOnly external {
+        require(amount > 0, "Minting amount should be more than 0");
+        _mint(receiver_address, amount);
     }
 
-    // Function to check the balance of a specific address
-    function checkBalance(address user) external view returns (uint256) {
-        return balances[user];
+    function transferTokens(uint amount, address receiver_address) external {
+        require(amount <= balanceOf(msg.sender), "Amount should be less than the sender balance");
+        _transfer(msg.sender, receiver_address, amount);
     }
 
-    // Function to redeem rewards using tokens
-    function redeem(uint256 rewardId) external returns (string memory) {
-        require(rewardId >= 0 && rewardId <= 2, "Invalid reward ID");
-        require(rewards[rewardId].price <= balances[msg.sender], "Insufficient balance to redeem reward");
-        
-        redeemedItems[msg.sender].push(rewards[rewardId].name);
-        balances[msg.sender] -= rewards[rewardId].price;
-        return rewards[rewardId].name;
+    function burn(uint amount) public override {
+        require(amount <= balanceOf(msg.sender), "Amount should not be more than balance");
+        _burn(msg.sender, amount);
     }
 
-    // Function to get the list of redeemed items for a specific user
+    function checkBalance(address user_address) external view returns (uint) {
+        return balanceOf(user_address);
+    }
+
+    function redeem(uint reward_ID) external returns (string memory) {
+        require(Reward[reward_ID].price <= balanceOf(msg.sender), "Insufficient Balance");
+        require(reward_ID >= 0 && reward_ID <= 2, "Invalid reward ID");
+
+        redeemedItems[msg.sender].push(Reward[reward_ID].name);
+        _burn(msg.sender, Reward[reward_ID].price);
+        return Reward[reward_ID].name;
+    }
+
     function getRedeemedItems(address user) external view returns (string[] memory) {
         return redeemedItems[user];
     }
