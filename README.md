@@ -143,6 +143,4 @@ contract DegenGaming {
         return redeemedItems[user];
     }
 }
-```
 
-This updated version is more structured and clear, with consistent formatting and instructions that are easier to follow.
